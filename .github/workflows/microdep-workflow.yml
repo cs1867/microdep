@@ -2,7 +2,7 @@ name: microdep-workflow
   
 on:  
   workflow_dispatch:
-    inputs:  
+    inputs:
       OS: 
         description: 'OS to build'
         required: true
