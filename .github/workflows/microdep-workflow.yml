@@ -20,6 +20,19 @@ jobs:
     runs-on: ubuntu-latest
      
     steps:
+
+      - name: Capture start date and time
+        id: start_time
+        run: echo "start_time=$(date -u)" >> $GITHUB_ENV
+
+      - name: Add start time to build_vars.json
+        run: |
+          modified_json=$(echo '${{ }}' | jq '.buildstats += { "${{ github.event.repository.name }}-start": "${{ env.start_time }}" }' )
+          BUILD_VARS_JSON=$(echo "$modified_json" | jq -c '.')
+          echo "BUILD_VARS_JSON=$BUILD_VARS_JSON" >> $GITHUB_ENV
+          echo "**** next next ****"
+          echo "BUILD_VARS_JSON=$BUILD_VARS_JSON"
+          
       - name: Check out Repo
         uses: actions/checkout@v4
         with:
@@ -27,7 +40,7 @@ jobs:
 
       - name: Pretty-print BUILD_VARS_JSON
         run: |
-          echo '${{ github.event.inputs.BUILD_VARS_JSON }}' | jq .
+          echo "$BUILD_VARS_JSON" 
 
       - name: Delete current repo from build
         id: modify_json
@@ -36,8 +49,6 @@ jobs:
           modified_json=$(echo  "$BUILD_VARS_JSON" | jq 'del(.repos[0])')
           echo "Modified JSON:"
           echo "$modified_json" | jq .
-          
-          # Convert the modified JSON back to a single-line string and export it as an environment variable
           BUILD_VARS_JSON=$(echo "$modified_json" | jq -c '.')
           echo "BUILD_VARS_JSON=$BUILD_VARS_JSON" >> $GITHUB_ENV
           echo "**** next next ****"
