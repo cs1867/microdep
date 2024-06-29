@@ -33,7 +33,7 @@ jobs:
         id: modify_json
         run: |
           # Remove the first repo from the repos array
-          modified_json=$(echo '${{ github.event.inputs.BUILD_VARS_JSON }}' | jq 'del(.repos[0])')
+          modified_json=$(echo  "$BUILD_VARS_JSON" | jq 'del(.repos[0])')
           echo "Modified JSON:"
           echo "$modified_json" | jq .
           
