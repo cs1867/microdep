@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       OS: 
-        description: 'OS to build'
+        description: 'OS to build' 
         required: true
       BUILD_VARS_JSON:
         description: 'Build var json file'
