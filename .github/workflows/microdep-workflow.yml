@@ -32,7 +32,8 @@ jobs:
           echo "BUILD_VARS_JSON=$BUILD_VARS_JSON" >> $GITHUB_ENV
           echo "**** next next ****"
           echo "BUILD_VARS_JSON=$BUILD_VARS_JSON"
-          
+      # TODO: Need to update to ${{ github.event.inputs.BUILD_BRANCH}}
+      # when builds are ready
       - name: Check out Repo
         uses: actions/checkout@v4
         with:
