@@ -118,15 +118,16 @@ jobs:
       - name: Pass workflow  
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GIT_ACTIONS }}
-          script: |
-            await github.rest.actions.createWorkflowDispatch({
-            owner: 'cs1867',
-            repo: '${{ env.NEXTREPO}}',
-            workflow_id: '${{ env.NEXTREPO}}-workflow.yml',
-            ref: 'github-workflow',
-              inputs: {
+            github-token: ${{ secrets.GIT_ACTIONS }}
+            script: |
+              await github.rest.actions.createWorkflowDispatch({
+              owner: 'cs1867',
+              repo: '${{ env.NEXTREPO}}',
+              workflow_id: '${{ env.NEXTREPO}}-workflow.yml',
+              ref: 'github-workflow',
+               inputs: {
               OS:  '${{ github.event.inputs.OS }}',
+              BUILD_VARS_JSON: '${{ env.BUILD_VARS_JSON}}',
               BUILD_BRANCH: '${{ github.event.inputs.BUILD_BRANCH }}'
-            }
-            })
+              }
+              })  
