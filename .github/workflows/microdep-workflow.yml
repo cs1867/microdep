@@ -3,6 +3,9 @@ name: microdep-workflow
 on:  
   workflow_dispatch:
     inputs:
+      BUILD_BRANCH:
+        description: 'Branch to build'
+        required: true
       OS: 
         description: 'OS to build' 
         required: true
@@ -124,6 +127,6 @@ jobs:
             ref: 'github-workflow',
               inputs: {
               OS:  '${{ github.event.inputs.OS }}',
-              BUILD_VARS_JSON: '${{ env.BUILD_VARS_JSON}}'
+              BUILD_BRANCH: '${{ github.event.inputs.BUILD_BRANCH }}'
             }
             })
