@@ -3,12 +3,6 @@ name: microdep-workflow
 on:  
   workflow_dispatch:
     inputs:
-      BUILD_BRANCH:
-        description: 'Branch to build'
-        required: true
-      OS: 
-        description: 'OS to build' 
-        required: true
       BUILD_VARS_JSON:
         description: 'Build var json file'
         required: true
@@ -35,6 +29,17 @@ jobs:
           echo "BUILD_VARS_JSON=$BUILD_VARS_JSON" >> $GITHUB_ENV
           echo "**** next next ****"
           echo "BUILD_VARS_JSON=$BUILD_VARS_JSON"
+          
+      - name: Get build vars from input file
+        id: extract_build_vars
+        run: |
+            BUILD_OS=$(echo  "$BUILD_VARS_JSON" | jq -r '.buildstats.OS' )
+            BUILD_BRANCH=$(echo  "$BUILD_VARS_JSON" | jq -r '.buildstats.BUILD_BRANCH' )
+            BUILD_TYPE=$(echo  "$BUILD_VARS_JSON" | jq -r '.buildstats.BUILD_TYPE' )
+            echo "BUILD_OS=$BUILD_OS" >> $GITHUB_ENV 
+            echo "BUILD_BRANCH=$BUILD_BRANCH" >> $GITHUB_ENV
+            echo "BUILD_TYPE=$BUILD_TYPE" >> $GITHUB_ENV
+          
       # TODO: Need to update to ${{ github.event.inputs.BUILD_BRANCH}}
       # when builds are ready
       - name: Check out Repo
@@ -42,9 +47,6 @@ jobs:
         with:
           ref: 5.1.0
 
-      - name: Pretty-print BUILD_VARS_JSON
-        run: |
-          echo "$BUILD_VARS_JSON" 
       - name: Delete current repo from build
         id: modify_json
         run: |
@@ -94,9 +96,8 @@ jobs:
           curl -s https://raw.githubusercontent.com/perfsonar/docker-oneshot-builder/main/build | sh -s - . '${{ github.event.inputs.OS }}'  
       - uses: actions/upload-artifact@v3
         with:
-           name: ${{ github.event.repository.name }}-${{ github.event.inputs.OS }}
+           name: ${{ github.event.repository.name }}-${{ env.BUILD_OS }}
            path: unibuild-repo
-           #Don't keep these for long.  This is just a test.
            retention-days: 5
 
       - name: Capture end date and time
@@ -116,6 +117,7 @@ jobs:
           cho "$BUILD_VARS_JSON" | jq .
          
       - name: Pass workflow  
+        if: env.BUILD_TYPE == 'FULL'
         uses: actions/github-script@v6
         with:
             github-token: ${{ secrets.GIT_ACTIONS }}
@@ -126,8 +128,6 @@ jobs:
               workflow_id: '${{ env.NEXTREPO}}-workflow.yml',
               ref: 'github-workflow',
                inputs: {
-              OS:  '${{ github.event.inputs.OS }}',
-              BUILD_VARS_JSON: '${{ env.BUILD_VARS_JSON}}',
-              BUILD_BRANCH: '${{ github.event.inputs.BUILD_BRANCH }}'
+              BUILD_VARS_JSON: '${{ env.BUILD_VARS_JSON}}'
               }
               })  
