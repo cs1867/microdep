@@ -94,7 +94,7 @@ jobs:
       - name: run docker oneshot builder
         run: |
           curl -s https://raw.githubusercontent.com/perfsonar/docker-oneshot-builder/main/build | sh -s - . '${{ env.BUILD_OS }}'  
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
            name: ${{ github.event.repository.name }}-${{ env.BUILD_OS }}
            path: unibuild-repo
